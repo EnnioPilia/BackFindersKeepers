@@ -11,8 +11,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "person_lists")
-public class PersonList {
+@Table(name = "Object")
+public class Object {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class PersonList {
     private User user;
 
     // One PersonList -> Many Person
-    @OneToMany(mappedBy = "personList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "Object", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Person> persons;
 
     // Getters & Setters
