@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backendgroupgenerateur.dto.MessageRequest;
 import com.example.backendgroupgenerateur.model.Conversation;
+import com.example.backendgroupgenerateur.model.Message;
 import com.example.backendgroupgenerateur.model.User;
 import com.example.backendgroupgenerateur.repository.ConversationRepository;
+import com.example.backendgroupgenerateur.repository.MessageRepository;
 import com.example.backendgroupgenerateur.service.ConversationAccessService;
 
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/conversation")
@@ -30,39 +32,41 @@ public class ConversationController {
     @Autowired
     private ConversationAccessService accessService;
 
+    @Autowired
+    private MessageRepository messageRepository;
+
     @GetMapping
     public List<Conversation> getConversations(Principal principal) {
         User current = accessService.getCurrentUser(principal);
-        List<Conversation> conversations = conversationRepository.findByUser1IdOrUser2Id(current.getId(), current.getId());
+        List<Conversation> conversations = conversationRepository.findByUser1IdOrUser2Id(current.getId(),
+                current.getId());
         System.out.println("▶▶ getConversations user=" + current.getNom() + " -> " + conversations.size() + " convs");
         return conversations;
     }
 
     @PostMapping
-    public ResponseEntity<Conversation> createConversation(
-            Principal principal,
-            @RequestBody @Valid Conversation conversation) {
-        
-        User current = accessService.getCurrentUser(principal);
-
-        // On met l'initiateur comme user1
-        conversation.setUser1(current);
-
-        // user2 doit être fourni dans le JSON
-        if (conversation.getUser2() == null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> createMessage(Principal principal, @RequestBody MessageRequest dto) {
+        if (dto.getConversationId() == null) {
+            return ResponseEntity.badRequest().body("Le champ 'conversationId' est requis");
         }
 
-        Conversation saved = conversationRepository.save(conversation);
-        System.out.println("▶▶ createConversation created id=" + saved.getId());
-        return ResponseEntity.ok(saved);
+        User current = accessService.getCurrentUser(principal);
+        Conversation conv = conversationRepository.findById(dto.getConversationId())
+                .orElseThrow(() -> new RuntimeException("Conversation introuvable"));
+
+        Message message = new Message();
+        message.setContenu(dto.getContent());
+        message.setConversation(conv);
+        message.setSender(current);
+
+        return ResponseEntity.ok(messageRepository.save(message));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConversation(
             Principal principal,
             @PathVariable Long id) {
-        
+
         User current = accessService.getCurrentUser(principal);
         Conversation conversation = accessService.getOwnedConversation(id, current);
         conversationRepository.delete(conversation);

@@ -70,9 +70,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/login", "/auth/register").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/objects").permitAll()
                 .requestMatchers("/conversation/**").permitAll()
                 .requestMatchers("/message/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/users/me").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/users/**").hasRole("ADMIN")

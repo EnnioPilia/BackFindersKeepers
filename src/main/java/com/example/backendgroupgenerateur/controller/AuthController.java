@@ -21,6 +21,7 @@ import com.example.backendgroupgenerateur.dto.RegisterRequest;
 import com.example.backendgroupgenerateur.model.User;
 import com.example.backendgroupgenerateur.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
@@ -35,6 +36,8 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+@Operation(summary = "Enregistrer un nouvel utilisateur",
+               description = "Permet à un nouvel utilisateur de s'enregistrer dans le système.")
 @PostMapping("/register")
 public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
     try {
@@ -62,6 +65,8 @@ public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
     }
 }
 
+@Operation(summary = "Connecter un utilisateur",
+               description = "Authentifie un utilisateur et génère un token JWT.")
 @PostMapping(value = "/login", produces = "application/json")
 public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
     try {
