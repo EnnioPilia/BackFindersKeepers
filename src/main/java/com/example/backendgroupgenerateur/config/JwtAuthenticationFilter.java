@@ -46,6 +46,7 @@ protected void doFilterInternal(HttpServletRequest request,
     String authHeader = request.getHeader("Authorization");
     String token = null;
 
+
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
         token = authHeader.substring(7);
     } else {
@@ -56,6 +57,7 @@ protected void doFilterInternal(HttpServletRequest request,
                     token = cookie.getValue();
                     break;
                 }
+
             }
         }
     }
