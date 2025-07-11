@@ -32,11 +32,11 @@ public class ObjectController {
         return ObjectRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Object getObjectById(@PathVariable Long id) {
-        return ObjectRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Object non trouvée avec id : " + id));
-    }
+    // @GetMapping("/{id}")
+    // public Object getObjectById(@PathVariable Long id) {
+    //     return ObjectRepository.findById(id)
+    //             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Object non trouvée avec id : " + id));
+    // }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
