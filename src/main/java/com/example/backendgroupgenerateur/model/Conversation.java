@@ -3,6 +3,7 @@ package com.example.backendgroupgenerateur.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -31,19 +32,23 @@ public class Conversation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user1_id", nullable = false)
+    @JsonIgnoreProperties({"conversationsUser1", "conversationsUser2", "messages"})
     private User user1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user2_id", nullable = false)
+    @JsonIgnoreProperties({"conversationsUser1", "conversationsUser2", "messages"})
     private User user2;
 
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore  // Évite la sérialisation pour éviter les boucles infinies et problèmes liés au lazy loading
     private List<Message> messages = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean partagee = false;
 
     // --- Getters & Setters ---
+
     public Long getId() {
         return id;
     }
@@ -60,24 +65,21 @@ public class Conversation {
         this.nom = nom;
     }
 
-// Getter et setter pour user1
-public User getUser1() {
-    return user1;
-}
+    public User getUser1() {
+        return user1;
+    }
 
-public void setUser1(User user1) {
-    this.user1 = user1;
-}
+    public void setUser1(User user1) {
+        this.user1 = user1;
+    }
 
-// Getter et setter pour user2
-public User getUser2() {
-    return user2;
-}
+    public User getUser2() {
+        return user2;
+    }
 
-public void setUser2(User user2) {
-    this.user2 = user2;
-}
-
+    public void setUser2(User user2) {
+        this.user2 = user2;
+    }
 
     public List<Message> getMessages() {
         return messages;
