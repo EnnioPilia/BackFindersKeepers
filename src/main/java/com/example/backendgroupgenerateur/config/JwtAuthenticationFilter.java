@@ -42,16 +42,24 @@ protected void doFilterInternal(HttpServletRequest request,
                                 FilterChain filterChain)
         throws ServletException, IOException {
 
-    // 🔍 Lire le token à partir du cookie "adminToken"
+    // 🔍 Lire le token à partir de l'en-tête "Authorization"
+    String authHeader = request.getHeader("Authorization");
     String token = null;
-    if (request.getCookies() != null) {
-        for (Cookie cookie : request.getCookies()) {
-            if ("adminToken".equals(cookie.getName())) {
-                token = cookie.getValue();
-                break;
+
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7);
+    } else {
+        // Sinon, lire le token à partir du cookie "adminToken" (fallback)
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("adminToken".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
             }
         }
     }
+
 
     if (token != null && jwtUtils.validateToken(token)) {
         String username = jwtUtils.getUsernameFromToken(token);
