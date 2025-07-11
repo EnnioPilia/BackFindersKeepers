@@ -46,6 +46,7 @@ protected void doFilterInternal(HttpServletRequest request,
     String token = null;
     if (request.getCookies() != null) {
         for (Cookie cookie : request.getCookies()) {
+            System.out.println("Cookie Name: " + cookie.getName() + ", Value: " + cookie.getValue()); // Added log
             if ("adminToken".equals(cookie.getName())) {
                 token = cookie.getValue();
                 break;

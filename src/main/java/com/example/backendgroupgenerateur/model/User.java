@@ -43,7 +43,10 @@ public class User {
     public void setRole(String role) {
         this.role = role.toUpperCase(); // forcer majuscule pour cohérence
     }
-    
+    public String getUsername() {
+    return this.email;  // correspond à l'identifiant unique que tu utilises
+}
+
     // autres getters/setters...
 
 
