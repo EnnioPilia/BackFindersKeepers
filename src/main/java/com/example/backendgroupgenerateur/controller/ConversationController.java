@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backendgroupgenerateur.model.Conversation;
 import com.example.backendgroupgenerateur.model.User;
@@ -30,19 +32,33 @@ public class ConversationController {
     @Autowired
     private ConversationAccessService accessService;
 
-    @GetMapping
-    public List<Conversation> getConversations(Principal principal) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Conversation> getConversationById(@PathVariable Long id, Principal principal) {
         User current = accessService.getCurrentUser(principal);
-        List<Conversation> conversations = conversationRepository.findByUser1IdOrUser2Id(current.getId(), current.getId());
-        System.out.println("▶▶ getConversations user=" + current.getNom() + " -> " + conversations.size() + " convs");
-        return conversations;
+
+        Conversation conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Conversation non trouvée avec id : " + id));
+
+        // Vérifie que l'utilisateur est bien user1 ou user2 de la conversation
+        if (!conversation.getUser1().getId().equals(current.getId()) &&
+                !conversation.getUser2().getId().equals(current.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(conversation);
+    }
+
+    @GetMapping("/all")
+    public List<Conversation> getAllConversations() {
+        return conversationRepository.findAll();
     }
 
     @PostMapping
     public ResponseEntity<Conversation> createConversation(
             Principal principal,
             @RequestBody @Valid Conversation conversation) {
-        
+
         User current = accessService.getCurrentUser(principal);
 
         // On met l'initiateur comme user1
@@ -62,7 +78,7 @@ public class ConversationController {
     public ResponseEntity<Void> deleteConversation(
             Principal principal,
             @PathVariable Long id) {
-        
+
         User current = accessService.getCurrentUser(principal);
         Conversation conversation = accessService.getOwnedConversation(id, current);
         conversationRepository.delete(conversation);
