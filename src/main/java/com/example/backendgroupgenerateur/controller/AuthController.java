@@ -51,7 +51,7 @@ public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         }
 
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassWord()); // mot de passe encodé en service UserService
+        user.setPassword(request.getPassword()); // mot de passe encodé en service UserService
         user.setAge(request.getAge());
         user.setRole(request.getRole() == null ? "USER" : request.getRole().toUpperCase());
 

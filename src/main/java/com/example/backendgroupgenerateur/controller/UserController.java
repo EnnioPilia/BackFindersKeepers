@@ -48,7 +48,7 @@ public class UserController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // ← tu peux adapter ça
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         boolean deleted = userService.deleteUserById(id);
         if (deleted) {
