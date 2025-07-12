@@ -35,66 +35,64 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-@PostMapping("/register")
-public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-    try {
-        User user = new User();
 
-        // Split le nom complet en nom et prénom
-        if (request.getName() != null) {
-            String[] parts = request.getName().split(" ", 2);
-            user.setNom(parts[0]);
-            user.setPrenom(parts.length > 1 ? parts[1] : "");
-        } else {
-            user.setNom("");
-            user.setPrenom("");
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            User user = new User();
+
+            if (request.getName() != null) {
+                String[] parts = request.getName().split(" ", 2);
+                user.setNom(parts[0]);
+                user.setPrenom(parts.length > 1 ? parts[1] : "");
+            } else {
+                user.setNom("");
+                user.setPrenom("");
+            }
+
+            user.setEmail(request.getEmail());
+            user.setPassword(request.getPassword());
+            user.setAge(request.getAge());
+            user.setRole(request.getRole() == null ? "USER" : request.getRole().toUpperCase());
+
+            userService.register(user);
+            return ResponseEntity.ok("Utilisateur enregistré");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // mot de passe encodé en service UserService
-        user.setAge(request.getAge());
-        user.setRole(request.getRole() == null ? "USER" : request.getRole().toUpperCase());
-
-        userService.register(user);
-        return ResponseEntity.ok("Utilisateur enregistré");
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
-}
 
-@PostMapping(value = "/login", produces = "application/json")
-public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-    try {
-        var authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+    @PostMapping(value = "/login", produces = "application/json")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        try {
+            var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
 
-        String role = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .orElse("ROLE_USER");
+            String role = authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(grantedAuthority -> grantedAuthority.getAuthority())
+                    .orElse("ROLE_USER");
 
-        String cleanRole = role.startsWith("ROLE_") ? role.substring(5).toLowerCase() : role.toLowerCase();
+            String cleanRole = role.startsWith("ROLE_") ? role.substring(5).toLowerCase() : role.toLowerCase();
 
-        String token = jwtUtils.generateToken(request.getEmail(), cleanRole);
+            String token = jwtUtils.generateToken(request.getEmail(), cleanRole);
 
-        ResponseCookie cookie = ResponseCookie.from("adminToken", token)
-                .httpOnly(true)
-                .secure(false) // true en prod HTTPS
-                .path("/")
-                .maxAge(24 * 60 * 60)
-                .sameSite("Strict")
-                .build();
+            // Envoi du cookie (optionnel si tu veux aussi garder le cookie côté navigateur)
+            ResponseCookie cookie = ResponseCookie.from("adminToken", token)
+                    .httpOnly(true)
+                    .secure(false) // true en prod HTTPS
+                    .path("/")
+                    .maxAge(24 * 60 * 60)
+                    .sameSite("Strict")
+                    .build();
 
-        response.addHeader("Set-Cookie", cookie.toString());
+            response.addHeader("Set-Cookie", cookie.toString());
 
-        // Ici on renvoie uniquement un message ET le token (pas de password !)
-return ResponseEntity.ok(new LoginResponse("Connexion réussie !"));
-    } catch (BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Identifiants invalides"));
+            // Envoi du token aussi dans la réponse JSON pour React Native
+            return ResponseEntity.ok(new LoginResponse("Connexion réussie !", token));
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Identifiants invalides"));
+        }
     }
-}
-
-
-
 }
