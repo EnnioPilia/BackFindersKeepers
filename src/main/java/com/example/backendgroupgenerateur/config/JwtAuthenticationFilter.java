@@ -29,13 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Lazy
     private UserService userService;
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getServletPath();
-        System.out.println("Request path: " + path + " => shouldNotFilter: " + path.startsWith("/auth/"));
-        return path.startsWith("/auth/");
-    }
-
+@Override
+protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    String path = request.getServletPath();
+    return path.startsWith("/auth/");
+}
 @Override
 protected void doFilterInternal(HttpServletRequest request,
                                 HttpServletResponse response,
