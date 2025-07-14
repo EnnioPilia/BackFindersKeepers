@@ -46,12 +46,11 @@ public class PasswordResetController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/reset-password")
-    public ResponseEntity<Void> redirectToFrontendWithToken(@RequestParam String token) {
-        String redirectUrl = "http://localhost:8081/reset-password?token=" + token;
-        System.out.println("Redirecting with token: " + token);
-        return ResponseEntity.status(302).header("Location", redirectUrl).build();
-    }
+@GetMapping("/reset-password")
+public ResponseEntity<Void> redirectToFrontendWithToken(@RequestParam String token) {
+    String redirectUrl = "http://localhost:8081/reset-password?token=" + token;
+    return ResponseEntity.status(302).header("Location", redirectUrl).build();
+}
 
     @GetMapping("/test-redirect")
     public ResponseEntity<String> testRedirect() {

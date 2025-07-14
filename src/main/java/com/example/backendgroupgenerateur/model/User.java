@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -32,19 +35,21 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role = "USER";  // Par défaut
+    private String role = "USER";
 
     @Column(nullable = false)
-    private boolean enabled = false;  // Inactif jusqu’à vérification de l’email
+    private boolean enabled = false;
 
     private Integer age;
-
     private LocalDateTime dateCreation = LocalDateTime.now();
-
     private LocalDateTime dateAcceptationCGU;
+    private LocalDateTime verifiedAt;
+    private boolean actif;
 
-    private LocalDateTime verifiedAt;  // Date de vérification du compte
-    private boolean actif;  // ou private boolean enabled;
+    // ✅ Ajout de la relation inverse avec cascade
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private VerificationToken verificationToken;
 
     public boolean isActif() {
         return actif;
@@ -54,101 +59,43 @@ public class User {
         this.actif = actif;
     }
 
-    // ===== Constructeurs =====
-    public User() {
-    }
+    // Getters & setters...
 
-    // ===== Getters & Setters =====
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 
-    public String getNom() {
-        return nom;
-    }
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getPrenom() {
-        return prenom;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role.toUpperCase(); }
 
-    public String getEmail() {
-        return email;
-    }
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
 
-    public String getPassword() {
-        return password;
-    }
+    public LocalDateTime getDateCreation() { return dateCreation; }
+    public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public LocalDateTime getDateAcceptationCGU() { return dateAcceptationCGU; }
+    public void setDateAcceptationCGU(LocalDateTime dateAcceptationCGU) { this.dateAcceptationCGU = dateAcceptationCGU; }
 
-    public String getRole() {
-        return role;
-    }
+    public LocalDateTime getVerifiedAt() { return verifiedAt; }
+    public void setVerifiedAt(LocalDateTime verifiedAt) { this.verifiedAt = verifiedAt; }
 
-    public void setRole(String role) {
-        this.role = role.toUpperCase();
-    }
+    public String getUsername() { return this.email; }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public LocalDateTime getDateAcceptationCGU() {
-        return dateAcceptationCGU;
-    }
-
-    public void setDateAcceptationCGU(LocalDateTime dateAcceptationCGU) {
-        this.dateAcceptationCGU = dateAcceptationCGU;
-    }
-
-    public LocalDateTime getVerifiedAt() {
-        return verifiedAt;
-    }
-
-    public void setVerifiedAt(LocalDateTime verifiedAt) {
-        this.verifiedAt = verifiedAt;
-    }
-
-    // Utilisé par Spring Security pour l'identifiant
-    public String getUsername() {
-        return this.email;
-    }
+    public VerificationToken getVerificationToken() { return verificationToken; }
+    public void setVerificationToken(VerificationToken verificationToken) { this.verificationToken = verificationToken; }
 }
