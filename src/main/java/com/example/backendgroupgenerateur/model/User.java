@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,36 +27,38 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @JsonIgnore  // Ne pas exposer le mot de passe dans les réponses JSON
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
-    private String role = "USER";  // par défaut en majuscules
+    @Column(nullable = false)
+    private String role = "USER";  // Par défaut
 
-    private boolean actif = false;
+    @Column(nullable = false)
+    private boolean enabled = false;  // Inactif jusqu’à vérification de l’email
+
+    private Integer age;
 
     private LocalDateTime dateCreation = LocalDateTime.now();
 
     private LocalDateTime dateAcceptationCGU;
 
-    private Integer age;
+    private LocalDateTime verifiedAt;  // Date de vérification du compte
+    private boolean actif;  // ou private boolean enabled;
 
-    public User() {}
-
-    // getters & setters
-
-    public String getRole() {
-        return role;
+    public boolean isActif() {
+        return actif;
     }
 
-    public void setRole(String role) {
-        this.role = role.toUpperCase(); // forcer majuscule pour cohérence
+    public void setActif(boolean actif) {
+        this.actif = actif;
     }
 
-    public String getUsername() {
-        return this.email;  // identifiant unique
+    // ===== Constructeurs =====
+    public User() {
     }
 
+    // ===== Getters & Setters =====
     public Long getId() {
         return id;
     }
@@ -96,12 +99,28 @@ public class User {
         this.password = password;
     }
 
-    public boolean isActif() {
-        return actif;
+    public String getRole() {
+        return role;
     }
 
-    public void setActif(boolean actif) {
-        this.actif = actif;
+    public void setRole(String role) {
+        this.role = role.toUpperCase();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public LocalDateTime getDateCreation() {
@@ -120,11 +139,16 @@ public class User {
         this.dateAcceptationCGU = dateAcceptationCGU;
     }
 
-    public Integer getAge() {
-        return age;
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setVerifiedAt(LocalDateTime verifiedAt) {
+        this.verifiedAt = verifiedAt;
+    }
+
+    // Utilisé par Spring Security pour l'identifiant
+    public String getUsername() {
+        return this.email;
     }
 }
