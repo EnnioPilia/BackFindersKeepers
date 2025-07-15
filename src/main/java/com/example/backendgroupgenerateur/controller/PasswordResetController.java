@@ -48,7 +48,7 @@ public class PasswordResetController {
 
 @GetMapping("/reset-password")
 public ResponseEntity<Void> redirectToFrontendWithToken(@RequestParam String token) {
-    String redirectUrl = "http://localhost:8081/reset-password?token=" + token;
+    String redirectUrl = "http://192.168.1.26:8081/reset-password?token=" + token;
     return ResponseEntity.status(302).header("Location", redirectUrl).build();
 }
 
