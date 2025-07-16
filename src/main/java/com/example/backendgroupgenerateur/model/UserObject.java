@@ -1,18 +1,16 @@
 package com.example.backendgroupgenerateur.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_object") // nom de la table en base (tu peux aussi mettre autre chose)
+@Table(name = "user_object")
 public class UserObject {
+
+    public enum ObjectType {
+        PERDU,
+        TROUVE
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,18 +18,27 @@ public class UserObject {
 
     private String name;
 
+    @Column(length = 1000)
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ObjectType type;
+
+    private boolean reclame;
+
+    private LocalDateTime date;
+
+    private String localisation;
+
+    private String photoPath;
+
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    // Relation Many UserObject -> One User
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    // One UserObject -> Many Persons (si tu veux activer plus tard)
-    @OneToMany(mappedBy = "userObject", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Person> persons;
 
     // --- Getters & Setters ---
 
@@ -51,12 +58,52 @@ public class UserObject {
         this.name = name;
     }
 
-    public User getUser() {
-        return user;
+    public String getDescription() {
+        return description;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ObjectType getType() {
+        return type;
+    }
+
+    public void setType(ObjectType type) {
+        this.type = type;
+    }
+
+    public boolean isReclame() {
+        return reclame;
+    }
+
+    public void setReclame(boolean reclame) {
+        this.reclame = reclame;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public String getLocalisation() {
+        return localisation;
+    }
+
+    public void setLocalisation(String localisation) {
+        this.localisation = localisation;
+    }
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public User getOwner() {
@@ -67,4 +114,11 @@ public class UserObject {
         this.owner = owner;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
