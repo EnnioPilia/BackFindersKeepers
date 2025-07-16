@@ -31,24 +31,38 @@ public class MessageService {
     }
 
     public Message envoyerMessage(Long conversationId, Long senderId, String contenu) {
-        Optional<Conversation> convOpt = conversationRepository.findById(conversationId);
-        Optional<User> userOpt = userRepository.findById(senderId);
+    Optional<Conversation> convOpt = conversationRepository.findById(conversationId);
+    Optional<User> userOpt = userRepository.findById(senderId);
 
-        if (convOpt.isEmpty() || userOpt.isEmpty()) {
-            throw new RuntimeException("Conversation ou utilisateur introuvable");
-        }
-
-        Message message = new Message();
-        message.setConversation(convOpt.get());
-        message.setSender(userOpt.get());
-        message.setContenu(contenu);
-
-        return messageRepository.save(message);
+    if (convOpt.isEmpty() || userOpt.isEmpty()) {
+        throw new RuntimeException("Conversation ou utilisateur introuvable");
     }
 
-    public List<Message> getMessagesParConversation(Long conversationId) {
+    Conversation conversation = convOpt.get();
+    User sender = userOpt.get();
+
+    // ✅ Vérification que le sender fait partie de la conversation
+    if (!conversation.getUser1().getId().equals(sender.getId()) &&
+        !conversation.getUser2().getId().equals(sender.getId())) {
+        throw new AccessDeniedException("Vous n'êtes pas autorisé à envoyer un message dans cette conversation");
+    }
+
+    Message message = new Message();
+    message.setConversation(conversation);
+    message.setSender(sender);
+    message.setContenu(contenu);
+
+    return messageRepository.save(message);
+}
+
+    public List<Message> getMessagesParConversation(Long conversationId, Long userId) {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversation introuvable"));
+
+        // Vérifie que l'utilisateur fait partie de la conversation
+        if (!isUserInConversation(userId, conversationId)) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à voir les messages de cette conversation");
+        }
 
         return messageRepository.findByConversationOrderByDateEnvoiAsc(conversation);
     }
@@ -62,5 +76,17 @@ public class MessageService {
         }
 
         messageRepository.deleteById(messageId);
+    }
+
+    // Méthode corrigée pour vérifier si l'utilisateur est user1 ou user2 dans la conversation
+    public boolean isUserInConversation(Long userId, Long conversationId) {
+        Optional<Conversation> convOpt = conversationRepository.findById(conversationId);
+        if (convOpt.isEmpty()) {
+            throw new RuntimeException("Conversation introuvable");
+        }
+        Conversation conversation = convOpt.get();
+
+        return (conversation.getUser1() != null && conversation.getUser1().getId().equals(userId))
+            || (conversation.getUser2() != null && conversation.getUser2().getId().equals(userId));
     }
 }

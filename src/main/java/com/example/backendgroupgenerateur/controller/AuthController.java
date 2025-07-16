@@ -64,13 +64,13 @@ public class AuthController {
             user.setPassword(request.getPassword());
             user.setAge(request.getAge());
             user.setRole(request.getRole() == null ? "USER" : request.getRole().toUpperCase());
-            user.setActif(false);  // inactive par défaut avant vérification
+            user.setActif(true);  // ATTENTIONNNNNNNN FALSEEEEE POUR AUTH FINAL !!!!!!!!!!
 
             User savedUser = userService.register(user);
 
             // Générer token et envoyer email via VerificationService
-            String verificationToken = verificationService.createVerificationToken(savedUser);
-            emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
+            // String verificationToken = verificationService.createVerificationToken(savedUser);
+            // emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
 
             return ResponseEntity.ok("Utilisateur enregistré avec succès, veuillez vérifier votre email");
         } catch (RuntimeException e) {
