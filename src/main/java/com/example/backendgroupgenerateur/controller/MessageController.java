@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backendgroupgenerateur.dto.MessageDTO;
 import com.example.backendgroupgenerateur.model.Message;
 import com.example.backendgroupgenerateur.model.User;
 import com.example.backendgroupgenerateur.service.ConversationAccessService;
@@ -41,12 +42,15 @@ public class MessageController {
         return ResponseEntity.ok(message);
     }
 
-    // Récupérer tous les messages d'une conversation
+    // Récupérer tous les messages d'une conversation, avec contrôle d'accès
     @GetMapping("/conversation/{conversationId}")
     public ResponseEntity<List<Message>> getMessagesParConversation(
-            @PathVariable Long conversationId) {
+            @PathVariable Long conversationId,
+            Principal principal) {
 
-        List<Message> messages = messageService.getMessagesParConversation(conversationId);
+        User currentUser = accessService.getCurrentUser(principal);
+
+        List<Message> messages = messageService.getMessagesParConversation(conversationId, currentUser.getId());
         return ResponseEntity.ok(messages);
     }
 
@@ -57,26 +61,5 @@ public class MessageController {
         messageService.deleteMessage(id, currentUser);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
-
-    // DTO pour recevoir le corps JSON avec senderId et contenu
-    public static class MessageDTO {
-        private Long senderId;
-        private String contenu;
-
-        public Long getSenderId() {
-            return senderId;
-        }
-
-        public void setSenderId(Long senderId) {
-            this.senderId = senderId;
-        }
-
-        public String getContenu() {
-            return contenu;
-        }
-
-        public void setContenu(String contenu) {
-            this.contenu = contenu;
-        }
-    }
 }
+
