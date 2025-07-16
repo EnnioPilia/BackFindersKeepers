@@ -11,8 +11,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Object")
-public class Object {
+@Table(name = "user_object") // nom de la table en base (tu peux aussi mettre autre chose)
+public class UserObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,39 +20,51 @@ public class Object {
 
     private String name;
 
-    // Relation Many PersonList -> One User
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
+    // Relation Many UserObject -> One User
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // One PersonList -> Many Person
-    @OneToMany(mappedBy = "Object", cascade = CascadeType.ALL, orphanRemoval = true)
+    // One UserObject -> Many Persons (si tu veux activer plus tard)
+    @OneToMany(mappedBy = "userObject", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Person> persons;
 
-    // Getters & Setters
+    // --- Getters & Setters ---
 
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
-    // public List<Person> getPersons() {
-    //     return persons;
-    // }
-    // public void setPersons(List<Person> persons) {
-    //     this.persons = persons;
-    // }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
 }
