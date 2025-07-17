@@ -40,6 +40,9 @@ public class UserObject {
 
     private String localisation;
 
+    @Column(length = 500)
+    private String photoPath;
+
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
@@ -104,6 +107,14 @@ public class UserObject {
 
     public void setLocalisation(String localisation) {
         this.localisation = localisation;
+    }
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public User getOwner() {
