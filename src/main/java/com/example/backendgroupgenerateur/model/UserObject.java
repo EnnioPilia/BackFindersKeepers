@@ -1,7 +1,17 @@
 package com.example.backendgroupgenerateur.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user_object")
@@ -30,14 +40,12 @@ public class UserObject {
 
     private String localisation;
 
-    private String photoPath;
-
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     // --- Getters & Setters ---
@@ -96,14 +104,6 @@ public class UserObject {
 
     public void setLocalisation(String localisation) {
         this.localisation = localisation;
-    }
-
-    public String getPhotoPath() {
-        return photoPath;
-    }
-
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
     }
 
     public User getOwner() {
