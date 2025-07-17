@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,8 +23,6 @@ import com.example.backendgroupgenerateur.model.User;
 import com.example.backendgroupgenerateur.service.EmailService;
 import com.example.backendgroupgenerateur.service.UserService;
 import com.example.backendgroupgenerateur.service.VerificationService;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/auth")
@@ -79,7 +76,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             var authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail().toLowerCase(), request.getPassword())
@@ -95,15 +92,15 @@ public class AuthController {
             String token = jwtUtils.generateToken(request.getEmail().toLowerCase(), cleanRole);
 
             // Création du cookie sécurisé
-            ResponseCookie cookie = ResponseCookie.from("adminToken", token)
-                    .httpOnly(true)
-                    .secure(false) // mettre true en production avec HTTPS
-                    .path("/")
-                    .maxAge(24 * 60 * 60)
-                    .sameSite("Strict")
-                    .build();
+            // ResponseCookie cookie = ResponseCookie.from("adminToken", token)
+            //         .httpOnly(true)
+            //         .secure(false) // mettre true en production avec HTTPS
+            //         .path("/")
+            //         .maxAge(24 * 60 * 60)
+            //         .sameSite("Strict")
+            //         .build();
 
-            response.addHeader("Set-Cookie", cookie.toString());
+            // response.addHeader("Set-Cookie", cookie.toString());
 
             // Renvoie le token dans la réponse JSON
             return ResponseEntity.ok(new LoginResponse("Connexion réussie !", token));
