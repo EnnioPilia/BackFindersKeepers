@@ -33,11 +33,13 @@ public class MessageController {
     @PostMapping("/send/{conversationId}")
     public ResponseEntity<Message> envoyerMessage(
             @PathVariable Long conversationId,
-            @RequestBody MessageDTO messageDto) {
+            @RequestBody MessageDTO messageDto,
+            Principal principal) {
 
+        User currentUser = accessService.getCurrentUser(principal);
         Message message = messageService.envoyerMessage(
                 conversationId,
-                messageDto.getSenderId(),
+                currentUser.getId(), // On utilise l'ID de l'utilisateur connecté
                 messageDto.getContenu());
         return ResponseEntity.ok(message);
     }
@@ -62,4 +64,3 @@ public class MessageController {
         return ResponseEntity.noContent().build(); // 204 No Content
     }
 }
-
