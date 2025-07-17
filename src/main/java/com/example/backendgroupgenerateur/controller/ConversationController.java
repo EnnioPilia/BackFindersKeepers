@@ -61,6 +61,17 @@ public class ConversationController {
         return ResponseEntity.ok(conversationRepository.findAll());
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getConversationsOfUser(Principal principal) {
+        User current = accessService.getCurrentUser(principal);
+        Long currentUserId = current.getId();
+
+        // Utiliser la méthode du repository pour récupérer les conversations
+        var conversations = conversationRepository.findByUser1IdOrUser2Id(currentUserId, currentUserId);
+
+        return ResponseEntity.ok(conversations);
+    }
+
     @PostMapping
     public ResponseEntity<Conversation> createConversation(
             Principal principal,
