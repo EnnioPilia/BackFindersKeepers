@@ -2,6 +2,8 @@ package com.example.backendgroupgenerateur.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,10 +47,12 @@ public class UserObject {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
+    @JsonIgnore
     private User owner;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
+    @JsonIgnore
     private User user;
 
     // --- Getters & Setters ---

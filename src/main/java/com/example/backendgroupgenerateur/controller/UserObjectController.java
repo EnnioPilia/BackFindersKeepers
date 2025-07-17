@@ -4,7 +4,15 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backendgroupgenerateur.model.User;
@@ -43,7 +51,8 @@ public class UserObjectController {
 
         return userObjectRepository.findById(id).map(object -> {
             if (!object.getOwner().getId().equals(currentUser.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à modifier cet objet.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Vous n'êtes pas autorisé à modifier cet objet.");
             }
 
             object.setName(updatedObject.getName());
@@ -53,13 +62,21 @@ public class UserObjectController {
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
     }
 
+    @GetMapping("/{id}")
+    public UserObject getObjectById(@PathVariable Long id) {
+        return userObjectRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteObject(@PathVariable Long id, Principal principal) {
         User currentUser = accessService.getCurrentUser(principal);
 
         UserObject object = userObjectRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
 
         if (!object.getOwner().getId().equals(currentUser.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à supprimer cet objet.");
