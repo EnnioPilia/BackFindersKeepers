@@ -20,12 +20,14 @@
     type="submit"
     [disabled]="loading"
     [loading]="loading"
-  >
-    Se connecter
+     label="Se connecter">
   </app-shared-button>
 
   <div *ngIf="errorMessage" class="error">
     {{ errorMessage }}
+  </div>
+    <div class="forgot-password">
+    <a [routerLink]="['/forgot-password']">Mot de passe oublié ?</a>
   </div>
 
 </form>

@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { SharedButtonComponent } from '../../../../shared/components/shared-button/shared-button.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home-login',
@@ -14,7 +14,8 @@ import { SharedButtonComponent } from '../../../../shared/components/shared-butt
     CommonModule,
     ReactiveFormsModule,
     SharedInputComponent,
-    SharedButtonComponent
+    SharedButtonComponent,
+     RouterModule
   ],
   templateUrl: './home-login.component.html',
   styleUrls: ['./home-login.component.scss']
