@@ -1,4 +1,31 @@
-<app-home-login-card (loginSubmit)="onLogin($event)"></app-home-login-card>
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-<div *ngIf="loading">Connexion en cours...</div>
-<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  <app-shared-input
+    label="Email"
+    type="email"
+    [formControl]="emailControl"
+    [invalid]="emailControl.invalid && emailControl.touched"
+    errorMessage="Email invalide"
+  ></app-shared-input>
+
+  <app-shared-input
+    label="Mot de passe"
+    type="password"
+    [formControl]="passwordControl"
+    [invalid]="passwordControl.invalid && passwordControl.touched"
+    errorMessage="Mot de passe requis"
+  ></app-shared-input>
+
+  <app-shared-button
+    type="submit"
+    [disabled]="loading"
+    [loading]="loading"
+  >
+    Se connecter
+  </app-shared-button>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+</form>

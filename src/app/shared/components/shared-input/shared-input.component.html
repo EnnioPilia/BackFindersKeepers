@@ -1,1 +1,14 @@
-<p>shared-input works!</p>
+<label *ngIf="label">{{ label }}</label>
+<input
+  [type]="type"
+  [placeholder]="placeholder"
+  [value]="value"
+  (input)="onInput($event)"
+  (blur)="onBlur()"
+  [disabled]="disabled"
+  [class.invalid]="invalid"
+/>
+
+<div *ngIf="invalid" class="error-message">
+  {{ errorMessage }}
+</div>

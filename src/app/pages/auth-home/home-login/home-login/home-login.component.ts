@@ -1,38 +1,69 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HomeLoginCardComponent } from '../home-login-components/home-login-card.component';
-import { AuthService } from '../../../../core/services/auth/auth.service';
+import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+import { AuthService } from '../../../../core/services/auth/auth.service';
+import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
+import { SharedButtonComponent } from '../../../../shared/components/shared-button/shared-button.component';
 
 @Component({
   selector: 'app-home-login',
-  templateUrl: './home-login.component.html',
-  styleUrls: ['./home-login.component.scss'],
   standalone: true,
-  imports: [HomeLoginCardComponent,CommonModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    SharedInputComponent,
+    SharedButtonComponent
+  ],
+  templateUrl: './home-login.component.html',
+  styleUrls: ['./home-login.component.scss']
 })
 export class HomeLoginComponent {
-  errorMessage: string | null = null;
+  loginForm: FormGroup;
   loading = false;
+  errorMessage: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
-onLogin(credentials: { email: string; password: string }) {
-  this.errorMessage = null;
-  this.loading = true;
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
 
-  this.authService.login(credentials).subscribe({
-    next: (response) => {
-      this.loading = false;
-      // Ici tu n'as pas user.enabled, donc pas de check
-      // Tu peux juste rediriger directement
-      this.router.navigate(['/dashboard']);
-    },
-    error: (err) => {
-      this.loading = false;
-      this.errorMessage = err.message || 'Erreur serveur, veuillez réessayer plus tard.';
+  // Getter pour faciliter l'accès aux controls
+  get emailControl(): FormControl {
+    return this.loginForm.get('email') as FormControl;
+  }
+
+  get passwordControl(): FormControl {
+    return this.loginForm.get('password') as FormControl;
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
-  });
-}
 
+    this.errorMessage = null;
+    this.loading = true;
 
+    const credentials = this.loginForm.value;
+
+    this.authService.login(credentials).subscribe({
+      next: (user) => {
+        this.loading = false;
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.message || 'Erreur serveur, veuillez réessayer plus tard.';
+      }
+    });
+  }
 }
