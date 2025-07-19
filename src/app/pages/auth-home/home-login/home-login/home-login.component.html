@@ -1,0 +1,4 @@
+<app-home-login-card (loginSubmit)="onLogin($event)"></app-home-login-card>
+
+<div *ngIf="loading">Connexion en cours...</div>
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
