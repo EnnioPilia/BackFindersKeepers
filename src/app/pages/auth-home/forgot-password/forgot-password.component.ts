@@ -11,7 +11,7 @@ import { SharedButtonComponent } from '../../../shared/components/shared-button/
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
-    imports: [
+  imports: [
     CommonModule,
     ReactiveFormsModule,
     SharedInputComponent,
@@ -24,7 +24,7 @@ export class ForgotPasswordComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.forgotForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
@@ -34,7 +34,7 @@ export class ForgotPasswordComponent implements OnInit {
     return this.forgotForm.get('email') as FormControl;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onSubmit(): void {
     if (this.forgotForm.invalid) {
@@ -46,14 +46,22 @@ export class ForgotPasswordComponent implements OnInit {
     this.errorMessage = null;
     this.successMessage = null;
 
-this.authService.requestPasswordReset(this.emailControl.value).subscribe({
-  next: (tokenLink) => {
-    console.log("📩 Lien de reset :", tokenLink); // Affiche bien http://localhost:4200/reset-password?token=...
-    this.successMessage = 'Lien : ' + tokenLink;
-  },
-  error: (err) => {
-    this.errorMessage = err.error || "Erreur lors de la demande.";
-  }
-});
+    this.authService.requestPasswordReset(this.emailControl.value).subscribe({
+      next: () => {
+            this.successMessage = 'Un lien vous a été envoyé sur votre boite mail';
+
+        // Redirection après 3 secondes ca marche pas 
+        setTimeout(() => {
+          console.log("⏳ Redirection vers /login en cours...");
+          this.router.navigate(['/home-login']);
+        }, 3000);
+
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error || "Erreur lors de la demande.";
+      }
+    });
   }
 }
