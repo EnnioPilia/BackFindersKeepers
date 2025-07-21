@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.backendgroupgenerateur.model.UserObject;
 
 public interface UserObjectRepository extends JpaRepository<UserObject, Long> {
-    List<UserObject> findByUserId(Long userId);
+    List<UserObject> findByOwnerId(Long ownerId);
 }

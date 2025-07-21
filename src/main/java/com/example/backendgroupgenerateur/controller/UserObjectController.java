@@ -37,11 +37,17 @@ public class UserObjectController {
         return userObjectRepository.findAll();
     }
 
+    @GetMapping("/me")
+    public List<UserObject> getMyObjects(Principal principal) {
+        User currentUser = accessService.getCurrentUser(principal);
+        return userObjectRepository.findByOwnerId(currentUser.getId());
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserObject createObject(@RequestBody UserObject userObject, Principal principal) {
         User currentUser = accessService.getCurrentUser(principal);
-        userObject.setOwner(currentUser); // Définit l'utilisateur courant comme propriétaire
+        userObject.setUser(currentUser); // Définit l'utilisateur courant comme propriétaire
         return userObjectRepository.save(userObject);
     }
 
@@ -50,7 +56,7 @@ public class UserObjectController {
         User currentUser = accessService.getCurrentUser(principal);
 
         return userObjectRepository.findById(id).map(object -> {
-            if (!object.getOwner().getId().equals(currentUser.getId())) {
+            if (!object.getUser().getId().equals(currentUser.getId())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                         "Vous n'êtes pas autorisé à modifier cet objet.");
             }
@@ -78,7 +84,7 @@ public class UserObjectController {
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
 
-        if (!object.getOwner().getId().equals(currentUser.getId())) {
+        if (!object.getUser().getId().equals(currentUser.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à supprimer cet objet.");
         }
 
