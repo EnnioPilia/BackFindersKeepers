@@ -47,7 +47,7 @@ public class UserObjectController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserObject createObject(@RequestBody UserObject userObject, Principal principal) {
         User currentUser = accessService.getCurrentUser(principal);
-        userObject.setUser(currentUser); // Définit l'utilisateur courant comme propriétaire
+        userObject.setOwner(currentUser);  // <-- correction ici
         return userObjectRepository.save(userObject);
     }
 
@@ -56,13 +56,34 @@ public class UserObjectController {
         User currentUser = accessService.getCurrentUser(principal);
 
         return userObjectRepository.findById(id).map(object -> {
-            if (!object.getUser().getId().equals(currentUser.getId())) {
+            if (!object.getOwner().getId().equals(currentUser.getId())) {  // <-- correction ici
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                         "Vous n'êtes pas autorisé à modifier cet objet.");
             }
 
-            object.setName(updatedObject.getName());
-            // autres propriétés à mettre à jour si besoin
+            // Mise à jour des champs modifiables
+            if (updatedObject.getName() != null) {
+                object.setName(updatedObject.getName());
+            }
+            if (updatedObject.getDescription() != null) {
+                object.setDescription(updatedObject.getDescription());
+            }
+            if (updatedObject.getType() != null) {
+                object.setType(updatedObject.getType());
+            }
+            if (updatedObject.getDate() != null) {
+                object.setDate(updatedObject.getDate());
+            }
+            if (updatedObject.getLocalisation() != null) {
+                object.setLocalisation(updatedObject.getLocalisation());
+            }
+            if (updatedObject.getPhotoPath() != null) {
+                object.setPhotoPath(updatedObject.getPhotoPath());
+            }
+            // Important : tu peux mettre à jour le champ reclame ici
+            object.setReclame(updatedObject.isReclame());
+
+            // NE PAS modifier object.setUser() ici !
 
             return userObjectRepository.save(object);
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
@@ -84,7 +105,7 @@ public class UserObjectController {
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Objet non trouvé avec id : " + id));
 
-        if (!object.getUser().getId().equals(currentUser.getId())) {
+        if (!object.getOwner().getId().equals(currentUser.getId())) {  // <-- correction ici
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à supprimer cet objet.");
         }
 
