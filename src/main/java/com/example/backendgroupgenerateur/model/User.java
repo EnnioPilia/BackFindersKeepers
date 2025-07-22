@@ -42,7 +42,6 @@ public class User {
 
     private Integer age;
     private LocalDateTime dateCreation = LocalDateTime.now();
-    private LocalDateTime dateAcceptationCGU;
     private LocalDateTime verifiedAt;
     private boolean actif;
 
@@ -87,9 +86,6 @@ public class User {
 
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
-
-    public LocalDateTime getDateAcceptationCGU() { return dateAcceptationCGU; }
-    public void setDateAcceptationCGU(LocalDateTime dateAcceptationCGU) { this.dateAcceptationCGU = dateAcceptationCGU; }
 
     public LocalDateTime getVerifiedAt() { return verifiedAt; }
     public void setVerifiedAt(LocalDateTime verifiedAt) { this.verifiedAt = verifiedAt; }
