@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backendgroupgenerateur.model.User;
 import com.example.backendgroupgenerateur.service.UserService;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -46,6 +48,27 @@ public class UserController {
         return ResponseEntity.ok(optionalUser.get());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long id,
+            @RequestBody User updatedUserData) {
+        Optional<User> optionalUser = userService.findById(id);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = optionalUser.get();
+
+        // Mise à jour des champs modifiables
+        user.setNom(updatedUserData.getNom());
+        user.setPrenom(updatedUserData.getPrenom());
+        user.setAge(updatedUserData.getAge());
+        user.setEmail(updatedUserData.getEmail());
+
+        User updatedUser = userService.updateUser(user);
+
+        return ResponseEntity.ok(updatedUser);
+    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
