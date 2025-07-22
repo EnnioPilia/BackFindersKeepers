@@ -45,11 +45,21 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
+    // public User createUser(User user) {
+    // user.setPassword(passwordEncoder.encode(user.getPassword()));
+    // user.setRole("USER");
+    // user.setActif(true);
+    // return userRepository.save(user);
+    // }
+
     public User createUser(User user) {
+        System.out.println("Avant sauvegarde - nom: " + user.getNom() + ", prenom: " + user.getPrenom());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("USER");
         user.setActif(true);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        System.out.println("Après sauvegarde - nom: " + savedUser.getNom() + ", prenom: " + savedUser.getPrenom());
+        return savedUser;
     }
 
     public User createAdmin(User user) {
@@ -73,7 +83,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec email : " + email));
 
         // if (!user.isActif()) {
-        //     throw new UsernameNotFoundException("Utilisateur non actif");
+        // throw new UsernameNotFoundException("Utilisateur non actif");
         // }
 
         return org.springframework.security.core.userdetails.User.builder()
@@ -91,8 +101,9 @@ public class UserService implements UserDetailsService {
         }
         return false;
     }
+
     public User save(User user) {
-    return userRepository.save(user);
-}
+        return userRepository.save(user);
+    }
 
 }

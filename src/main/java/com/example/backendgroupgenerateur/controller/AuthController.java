@@ -48,24 +48,17 @@ public class AuthController {
         try {
             User user = new User();
 
-            if (request.getName() != null && !request.getName().isBlank()) {
-                String[] parts = request.getName().trim().split(" ", 2);
-                user.setNom(parts[0]);
-                user.setPrenom(parts.length > 1 ? parts[1] : "");
-            } else {
-                user.setNom("");
-                user.setPrenom("");
-            }
-
+            user.setNom(request.getNom() != null ? request.getNom() : "");
+            user.setPrenom(request.getPrenom() != null ? request.getPrenom() : "");
             user.setEmail(request.getEmail().toLowerCase());
             user.setPassword(request.getPassword());
             user.setAge(request.getAge());
             user.setRole(request.getRole() == null ? "USER" : request.getRole().toUpperCase());
-            user.setActif(true);  // ATTENTIONNNNNNNN FALSEEEEE POUR AUTH FINAL !!!!!!!!!!
+            user.setActif(true);  // Ajuster selon ta politique d'activation
 
             User savedUser = userService.register(user);
 
-            // Générer token et envoyer email via VerificationService
+            // Si besoin, générer un token de vérification et envoyer un email
             // String verificationToken = verificationService.createVerificationToken(savedUser);
             // emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
 
@@ -91,18 +84,6 @@ public class AuthController {
 
             String token = jwtUtils.generateToken(request.getEmail().toLowerCase(), cleanRole);
 
-            // Création du cookie sécurisé
-            // ResponseCookie cookie = ResponseCookie.from("adminToken", token)
-            //         .httpOnly(true)
-            //         .secure(false) // mettre true en production avec HTTPS
-            //         .path("/")
-            //         .maxAge(24 * 60 * 60)
-            //         .sameSite("Strict")
-            //         .build();
-
-            // response.addHeader("Set-Cookie", cookie.toString());
-
-            // Renvoie le token dans la réponse JSON
             return ResponseEntity.ok(new LoginResponse("Connexion réussie !", token));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Identifiants invalides"));
