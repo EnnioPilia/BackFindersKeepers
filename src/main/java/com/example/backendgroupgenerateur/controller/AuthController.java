@@ -54,13 +54,13 @@ public class AuthController {
             user.setPassword(request.getPassword());
             user.setAge(request.getAge());
             user.setRole(request.getRole() == null ? "USER" : request.getRole().toUpperCase());
-            user.setActif(true);  // Ajuster selon ta politique d'activation
+            user.setActif(false);  // Ajuster selon ta politique d'activation
 
             User savedUser = userService.register(user);
 
-            // Si besoin, générer un token de vérification et envoyer un email
-            // String verificationToken = verificationService.createVerificationToken(savedUser);
-            // emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
+         //   Si besoin, générer un token de vérification et envoyer un email
+            String verificationToken = verificationService.createVerificationToken(savedUser);
+            emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
 
             return ResponseEntity.ok("Utilisateur enregistré avec succès, veuillez vérifier votre email");
         } catch (RuntimeException e) {

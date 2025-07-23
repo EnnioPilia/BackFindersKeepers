@@ -82,9 +82,9 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec email : " + email));
 
-        // if (!user.isActif()) {
-        // throw new UsernameNotFoundException("Utilisateur non actif");
-        // }
+        if (!user.isActif()) {
+        throw new UsernameNotFoundException("Utilisateur non actif");
+        }
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
