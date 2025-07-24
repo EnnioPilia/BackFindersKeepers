@@ -27,6 +27,10 @@ export class AuthService {
     return this.http.post<{ message: string; token: string }>(`${this.baseUrl}/login`, credentials, {
       withCredentials: true
     }).pipe(
+      tap(response => {
+        // Stocker le token dans le localStorage
+        localStorage.setItem('authToken', response.token);
+      }),
       catchError(err => {
         return throwError(() => new Error(err?.error?.message || "Échec de l'authentification."));
       })
@@ -37,7 +41,10 @@ export class AuthService {
     return this.http.post<void>(`${this.baseUrl}/logout`, {}, {
       withCredentials: true
     }).pipe(
-      tap(() => this.currentUser = null)
+      tap(() => {
+        this.currentUser = null;
+        localStorage.removeItem('authToken'); // Supprimer token au logout
+      })
     );
   }
 
