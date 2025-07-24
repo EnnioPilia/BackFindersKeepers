@@ -20,7 +20,7 @@ import com.example.backendgroupgenerateur.service.UserService;
 
 @RestController
 @RequestMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-        @PreAuthorize("hasRole('ADMIN')")
+        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Optional<User> optionalUser = userService.findByEmail(email);
@@ -73,7 +73,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         boolean deleted = userService.deleteUserById(id);
         if (deleted) {
