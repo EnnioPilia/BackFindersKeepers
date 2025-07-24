@@ -30,31 +30,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 🔍 Lire le token à partir de l'en-tête "Authorization"
         String authHeader = request.getHeader("Authorization");
         String token = null;
 
+        // 🔍 Extraction du token depuis le header Authorization
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
+            System.out.println("✅ Token trouvé dans le header: " + token);
+        } else {
+            System.out.println("⛔ Aucun token trouvé dans le header Authorization");
         }
 
+        // 🔒 Validation et traitement du token
         if (token != null && jwtUtils.validateToken(token)) {
             String username = jwtUtils.getUsernameFromToken(token);
+            System.out.println("✅ Utilisateur extrait du token : " + username);
 
+            // Vérifie que l'utilisateur n'est pas déjà authentifié
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                System.out.println("✅ Rôles de l'utilisateur : " + userDetails.getAuthorities());
+
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities());
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println("🔐 Utilisateur authentifié : " + username);
             }
+        } else if (token != null) {
+            System.out.println("⛔ Token invalide");
         }
 
+        // 🔁 Poursuite de la chaîne de filtres
         filterChain.doFilter(request, response);
     }
-
 }

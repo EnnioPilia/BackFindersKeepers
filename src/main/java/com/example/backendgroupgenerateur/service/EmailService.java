@@ -1,19 +1,22 @@
 package com.example.backendgroupgenerateur.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 @Service
 public class EmailService {
@@ -99,4 +102,18 @@ public class EmailService {
             System.err.println("Erreur envoi mail vérification : " + e.getMessage());
         }
     }
+    
+    public void sendPasswordResetEmailAdmin(String toEmail, String token) {
+        String subject = "Réinitialisation de votre mot de passe";
+        String resetUrl = "http://localhost:4200/reset-password?token=" + token;
+        String message = "Pour réinitialiser votre mot de passe, cliquez sur ce lien : " + resetUrl;
+
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setTo(toEmail);
+        email.setSubject(subject);
+        email.setText(message);
+
+        mailSender.send(email);
+    }
+
 }

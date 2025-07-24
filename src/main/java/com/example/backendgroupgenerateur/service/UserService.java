@@ -25,18 +25,16 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Met à jour un utilisateur existant (utile pour activation, etc.)
     public User updateUser(User user) {
         return userRepository.save(user);
     }
 
-    // Enregistre un nouvel utilisateur avec rôle USER par défaut
     public User register(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email déjà utilisé");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setActif(false); // utilisateur pas actif tant qu’il n’a pas validé email
+        user.setActif(false);
         user.setRole(user.getRole() == null ? "USER" : user.getRole().toUpperCase());
         return userRepository.save(user);
     }
@@ -44,13 +42,6 @@ public class UserService implements UserDetailsService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-
-    // public User createUser(User user) {
-    // user.setPassword(passwordEncoder.encode(user.getPassword()));
-    // user.setRole("USER");
-    // user.setActif(true);
-    // return userRepository.save(user);
-    // }
 
     public User createUser(User user) {
         System.out.println("Avant sauvegarde - nom: " + user.getNom() + ", prenom: " + user.getPrenom());
@@ -83,13 +74,18 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec email : " + email));
 
         if (!user.isActif()) {
-        throw new UsernameNotFoundException("Utilisateur non actif");
+            throw new UsernameNotFoundException("Utilisateur non actif");
         }
+
+        String rawRole = user.getRole();
+        String springRole = rawRole.replace("ROLE_", ""); // ✅ supprime le préfixe si déjà présent
+
+        System.out.println("Chargement de l'utilisateur : " + email + " avec rôle : " + springRole);
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole())
+                .roles(springRole) // ⚠️ ne jamais mettre "ROLE_" ici
                 .build();
     }
 
@@ -105,5 +101,4 @@ public class UserService implements UserDetailsService {
     public User save(User user) {
         return userRepository.save(user);
     }
-
 }
