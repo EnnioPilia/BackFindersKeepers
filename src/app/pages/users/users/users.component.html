@@ -1,1 +1,59 @@
-<p>users works!</p>
+<section class="users-list">
+  <h3>Liste des utilisateurs</h3>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Recherche nom ou email"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="applyFilters()"
+    />
+
+    <select [(ngModel)]="sortField" (change)="applyFilters()">
+      <option value="nom">Nom (A-Z)</option>
+      <option value="email">Email (A-Z)</option>
+    </select>
+
+    <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <option value="all">Tous</option>
+      <option value="active">Actifs</option>
+      <option value="inactive">Inactifs</option>
+    </select>
+  </div>
+
+  <div *ngIf="loadingUsers">Chargement...</div>
+  <div *ngIf="errorUsers" class="error">{{ errorUsers }}</div>
+
+  <table *ngIf="!loadingUsers && filteredUsers.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+<tbody>
+  <tr *ngFor="let user of filteredUsers">
+    <td>{{ user.id }}</td>
+    <td>{{ user.nom }}</td>
+    <td>{{ user.prenom }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.actif ? 'Actif' : 'Inactif' }}</td>
+    <td>
+      <button (click)="toggleUserStatus(user)">
+        {{ user.actif ? 'Bloquer' : 'Débloquer' }}
+      </button>
+      <button (click)="deleteUser(user.id)" style="color: red;">
+        Supprimer
+      </button>
+    </td>
+  </tr>
+</tbody>
+  </table>
+
+  <div *ngIf="!loadingUsers && filteredUsers.length === 0">
+    Aucun utilisateur trouvé.
+  </div>
+</section>

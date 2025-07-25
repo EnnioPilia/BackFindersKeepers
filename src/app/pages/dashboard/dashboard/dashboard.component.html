@@ -1,8 +1,6 @@
 <div class="dashboard">
 
   <h2>Tableau de bord Admin</h2>
-
-  <!-- Section Statistiques -->
   <section class="stats">
     <h3>Statistiques générales</h3>
 
@@ -17,37 +15,5 @@
       <p>Objets retrouvés : {{ stats.foundObjectsCount }}</p>
     </div>
   </section>
-
-  <hr />
-
-  <!-- Section Liste des utilisateurs -->
-  <section class="users-list">
-    <h3>Liste des utilisateurs</h3>
-
-    <div *ngIf="loadingUsers">Chargement des utilisateurs...</div>
-    <div *ngIf="errorUsers" class="error">{{ errorUsers }}</div>
-
-    <table *ngIf="users.length > 0 && !loadingUsers && !errorUsers" class="users-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Rôle</th>
-          <!-- Ajoute d'autres colonnes selon ton modèle Users -->
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users">
-          <td>{{ user.id }}</td>
-          <td>{{ user.nom }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.role }}</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div *ngIf="!loadingUsers && users.length === 0">Aucun utilisateur trouvé.</div>
-  </section>
-
+  <hr/>
 </div>

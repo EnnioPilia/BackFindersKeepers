@@ -1,0 +1,14 @@
+<label [attr.for]="selectId">{{ label }}</label>
+<select
+  [id]="selectId"
+  [disabled]="disabled"
+  [ngModel]="value"
+  (ngModelChange)="onChange($event)"
+  (blur)="onTouched()"
+  [class.invalid]="invalid"
+>
+  <option *ngFor="let option of options" [ngValue]="option.value">
+    {{ option.label }}
+  </option>
+</select>
+<div *ngIf="invalid && errorMessage" class="error">{{ errorMessage }}</div>

@@ -1,0 +1,35 @@
+<nav class="header-nav">
+  <div class="nav-links">
+    <app-shared-button
+      label="Dashboard"
+      type="button"
+      (click)="navigateTo('/dashboard')"
+    ></app-shared-button>
+
+    <app-shared-button
+      label="Conversations"
+      type="button"
+      (click)="navigateTo('/conversation')"
+  
+    ></app-shared-button>
+
+    <app-shared-button
+      label="Objets"
+      type="button"
+      (click)="navigateTo('/objects')"
+    ></app-shared-button>
+
+    <app-shared-button
+      label="Utilisateurs"
+      type="button"
+      (click)="navigateTo('/users')"
+    ></app-shared-button>
+  </div>
+
+  <app-shared-button
+    label="Déconnexion"
+    type="button"
+    (click)="logout()"
+  ></app-shared-button>
+</nav>
+

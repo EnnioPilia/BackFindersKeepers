@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment.prod';
-import { Stats } from '../../models/stats.model'; 
+import { Stats } from '../../models/stats.model';
 import { Users } from '../../models/users.model';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class AdminService {
   getStats(): Observable<Stats> {
     return this.http.get<Stats>(`${this.baseUrl}/admin/stats`, { withCredentials: true }).pipe(
       catchError(err => {
-        console.error('Erreur lors du chargement des stats', err);
+        console.error('Erreur lors du chargement des statistiques', err);
         return throwError(() => new Error('Erreur lors du chargement des statistiques'));
       })
     );
@@ -31,4 +31,23 @@ export class AdminService {
       })
     );
   }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/users/${id}`, { withCredentials: true }).pipe(
+      catchError(err => {
+        console.error(`Erreur lors de la suppression de l'utilisateur avec id ${id}`, err);
+        return throwError(() => new Error('Erreur lors de la suppression de l\'utilisateur'));
+      })
+    );
+  }
+
+updateUserStatus(id: number, userData: Partial<Users>) {
+  return this.http.put<Users>(`${this.baseUrl}/users/${id}/status`, userData, { withCredentials: true }).pipe(
+    catchError(err => {
+      console.error('Erreur lors de la mise à jour de l\'utilisateur', err);
+      return throwError(() => new Error('Erreur lors de la mise à jour de l\'utilisateur'));
+    })
+  );
+}
+
 }

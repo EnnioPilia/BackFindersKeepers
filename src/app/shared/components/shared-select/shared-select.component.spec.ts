@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MessageItemComponent } from './message-item.component';
+import { SharedSelectComponent } from './shared-select.component';
 
-describe('MessageItemComponent', () => {
-  let component: MessageItemComponent;
-  let fixture: ComponentFixture<MessageItemComponent>;
+describe('SharedSelectComponent', () => {
+  let component: SharedSelectComponent;
+  let fixture: ComponentFixture<SharedSelectComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MessageItemComponent]
+      imports: [SharedSelectComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MessageItemComponent);
+    fixture = TestBed.createComponent(SharedSelectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
