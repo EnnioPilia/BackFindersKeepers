@@ -1,6 +1,7 @@
 package com.example.backendgroupgenerateur.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -82,4 +83,21 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+@PutMapping("/{id}/status")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<User> updateUserStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> statusUpdate) {
+    Optional<User> optionalUser = userService.findById(id);
+    if (optionalUser.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    User user = optionalUser.get();
+    Boolean actif = statusUpdate.get("actif");
+    if (actif != null) {
+        user.setActif(actif);
+    }
+    userService.updateUser(user);
+    return ResponseEntity.ok(user);
+}
+
 }

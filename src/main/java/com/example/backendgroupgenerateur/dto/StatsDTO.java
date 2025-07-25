@@ -29,4 +29,14 @@ public class StatsDTO {
     public void setFoundObjectsCount(long foundObjectsCount) {
         this.foundObjectsCount = foundObjectsCount;
     }
+    private long activeUsersCount;
+
+public long getActiveUsersCount() {
+    return activeUsersCount;
+}
+
+public void setActiveUsersCount(long activeUsersCount) {
+    this.activeUsersCount = activeUsersCount;
+}
+
 }

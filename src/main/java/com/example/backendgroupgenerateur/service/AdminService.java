@@ -16,11 +16,16 @@ public class AdminService {
     @Autowired
     private UserObjectRepository userObjectRepository;
 
-    public StatsDTO getStats() {
-        StatsDTO stats = new StatsDTO();
-        stats.setUsersCount(userRepository.count());
-        stats.setFoundObjectsCount(userObjectRepository.count());
-        stats.setAdsCount(0); // Tu peux modifier si tu ajoutes une entité annonce plus tard
-        return stats;
-    }
+public StatsDTO getStats() {
+    StatsDTO stats = new StatsDTO();
+    stats.setUsersCount(userRepository.count());
+    stats.setFoundObjectsCount(userObjectRepository.count());
+    stats.setAdsCount(0);
+
+    long activeUsersCount = userRepository.countActiveUsers();
+    stats.setActiveUsersCount(activeUsersCount);
+
+    return stats;
+}
+
 }
