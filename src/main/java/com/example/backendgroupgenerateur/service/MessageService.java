@@ -31,36 +31,39 @@ public class MessageService {
     }
 
     public Message envoyerMessage(Long conversationId, Long senderId, String contenu) {
-    Optional<Conversation> convOpt = conversationRepository.findById(conversationId);
-    Optional<User> userOpt = userRepository.findById(senderId);
+        Optional<Conversation> convOpt = conversationRepository.findById(conversationId);
+        Optional<User> userOpt = userRepository.findById(senderId);
 
-    if (convOpt.isEmpty() || userOpt.isEmpty()) {
-        throw new RuntimeException("Conversation ou utilisateur introuvable");
+        if (convOpt.isEmpty() || userOpt.isEmpty()) {
+            throw new RuntimeException("Conversation ou utilisateur introuvable");
+        }
+
+        Conversation conversation = convOpt.get();
+        User sender = userOpt.get();
+
+        // ✅ Vérification que le sender fait partie de la conversation
+        if (!conversation.getUser1().getId().equals(sender.getId()) &&
+            !conversation.getUser2().getId().equals(sender.getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à envoyer un message dans cette conversation");
+        }
+
+        Message message = new Message();
+        message.setConversation(conversation);
+        message.setSender(sender);
+        message.setContenu(contenu);
+
+        return messageRepository.save(message);
     }
-
-    Conversation conversation = convOpt.get();
-    User sender = userOpt.get();
-
-    // ✅ Vérification que le sender fait partie de la conversation
-    if (!conversation.getUser1().getId().equals(sender.getId()) &&
-        !conversation.getUser2().getId().equals(sender.getId())) {
-        throw new AccessDeniedException("Vous n'êtes pas autorisé à envoyer un message dans cette conversation");
-    }
-
-    Message message = new Message();
-    message.setConversation(conversation);
-    message.setSender(sender);
-    message.setContenu(contenu);
-
-    return messageRepository.save(message);
-}
 
     public List<Message> getMessagesParConversation(Long conversationId, Long userId) {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversation introuvable"));
 
-        // Vérifie que l'utilisateur fait partie de la conversation
-        if (!isUserInConversation(userId, conversationId)) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        // Si ce n'est pas un admin et qu'il n'est pas dans la conversation, on refuse l'accès
+        if (!"ADMIN".equals(user.getRole()) && !isUserInConversation(userId, conversationId)) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à voir les messages de cette conversation");
         }
 
@@ -71,7 +74,8 @@ public class MessageService {
         Message message = messageRepository.findById(messageId)
             .orElseThrow(() -> new EntityNotFoundException("Message non trouvé"));
 
-        if (!message.getSender().getId().equals(currentUser.getId())) {
+        // L'admin peut aussi supprimer n'importe quel message
+        if (!message.getSender().getId().equals(currentUser.getId()) && !"ADMIN".equals(currentUser.getRole())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à supprimer ce message");
         }
 
