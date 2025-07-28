@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/reset-password/**").permitAll()
                 .requestMatchers("/reset-password/**").permitAll()
-                .requestMatchers("/objects", "/objects/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/objects", "/objects/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/conversation/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/message/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
