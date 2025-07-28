@@ -33,8 +33,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // config.setAllowedOrigins(List.of("http://192.168.1.26:8081")); // Ton frontend simplon
-        // config.setAllowedOrigins(List.of("http://192.168.1.108:8081")); // Ton frontend maison
+        config.setAllowedOrigins(List.of("http://192.168.1.26:8081")); // Ton frontend simplon
+        config.setAllowedOrigins(List.of("http://192.168.1.108:8081")); // Ton frontend maison
         config.setAllowedOrigins(List.of("http://localhost:4200")); // Ton frontend ici
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .requestMatchers("/conversation/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/message/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/users/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/users/**").permitAll()
                 .requestMatchers("/error", "/error/**").permitAll()
                 .anyRequest().authenticated()
                 )

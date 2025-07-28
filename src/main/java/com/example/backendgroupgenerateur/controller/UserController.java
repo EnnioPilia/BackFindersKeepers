@@ -21,7 +21,7 @@ import com.example.backendgroupgenerateur.service.UserService;
 
 @RestController
 @RequestMapping("/users")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Optional<User> optionalUser = userService.findByEmail(email);
