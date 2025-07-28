@@ -58,7 +58,7 @@ public class AuthController {
 
             User savedUser = userService.register(user);
 
-         //   Si besoin, générer un token de vérification et envoyer un email
+            //   Si besoin, générer un token de vérification et envoyer un email
             String verificationToken = verificationService.createVerificationToken(savedUser);
             emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
 
@@ -103,4 +103,26 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest request) {
+        try {
+            User user = new User();
+
+            user.setNom(request.getNom() != null ? request.getNom() : "");
+            user.setPrenom(request.getPrenom() != null ? request.getPrenom() : "");
+            user.setEmail(request.getEmail().toLowerCase());
+            user.setPassword(request.getPassword());
+            user.setAge(request.getAge());
+            user.setRole("ADMIN");      // rôle forcé ADMIN
+            user.setActif(true);        // actif direct
+
+            User savedAdmin = userService.createAdmin(user);
+
+            return ResponseEntity.ok("Admin enregistré avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

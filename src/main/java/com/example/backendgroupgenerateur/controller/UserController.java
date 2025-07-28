@@ -1,6 +1,7 @@
 package com.example.backendgroupgenerateur.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import com.example.backendgroupgenerateur.service.UserService;
 
 @RestController
 @RequestMapping("/users")
+    // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -39,6 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
+        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Optional<User> optionalUser = userService.findByEmail(email);
@@ -71,7 +74,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         boolean deleted = userService.deleteUserById(id);
         if (deleted) {
@@ -80,4 +83,21 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+@PutMapping("/{id}/status")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<User> updateUserStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> statusUpdate) {
+    Optional<User> optionalUser = userService.findById(id);
+    if (optionalUser.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    User user = optionalUser.get();
+    Boolean actif = statusUpdate.get("actif");
+    if (actif != null) {
+        user.setActif(actif);
+    }
+    userService.updateUser(user);
+    return ResponseEntity.ok(user);
+}
+
 }

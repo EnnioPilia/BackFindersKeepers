@@ -21,16 +21,15 @@ public class PasswordResetService {
     private final EmailService emailService;  // injecté
 
     public PasswordResetService(PasswordResetRepository tokenRepository,
-                                 UserRepository userRepository,
-                                 PasswordEncoder passwordEncoder,
-                                 EmailService emailService) {
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            EmailService emailService) {
         this.tokenRepository = tokenRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
     }
 
-    // Étape 1 - Générer et enregistrer un token, puis envoyer mail
     public String createPasswordResetToken(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
@@ -45,8 +44,12 @@ public class PasswordResetService {
         PasswordReset resetToken = new PasswordReset(token, user, now, expiresAt);
         tokenRepository.save(resetToken);
 
-        // Envoi du mail avec le token
-        emailService.sendPasswordResetEmail(user.getEmail(), token);
+        // Envoi du mail avec le token, diffère selon le rôle
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+            emailService.sendPasswordResetEmailAdmin(user.getEmail(), token);
+        } else {
+            emailService.sendPasswordResetEmail(user.getEmail(), token);
+        }
 
         return "Un lien de réinitialisation a été envoyé à votre adresse email.";
     }
